@@ -4,6 +4,7 @@ import stephenLewisLogo from '../assets/Stephen Lewis Foundation.png';
 import aquazenLogo from '../assets/Aquazen Services.png';
 import riipenLogo from '../assets/Riipen.png';
 import equitableLogo from '../assets/Equitable Bank.png';
+import muiaLogo from '../assets/Muia.png';
 
 const experiences = [
   {
@@ -17,6 +18,18 @@ const experiences = [
       "Built custom metrics with DAX and Power Query, improving reporting accuracy by 25%.",
       "Managed SQL and Excel-based data sources, ensuring data consistency and accessibility across 3+ teams.",
       "Collaborated with cross-functional teams to define data requirements, delivering insights that supported funding strategies and improved stakeholder reporting efficiency."
+    ]
+  },
+  {
+    role: "Software Engineer - AI",
+    company: "Muia Consulting",
+    location: "Toronto, ON",
+    date: "Sep 2025 – Dec 2025",
+    logo: muiaLogo,
+    bullets: [
+      "Developed scalable FastAPI backend services and a Vue.js (Vite) frontend to upload, validate, and process tax documents.",
+      "Engineered backend validation and data-check pipelines, achieving 98% processing accuracy across supported tax documents.",
+      "Integrated secure Google Drive OAuth 2.0 workflows to automatically store generated tax filings and documents."
     ]
   },
   {
