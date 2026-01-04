@@ -28,7 +28,7 @@ const projects = [
     logo: libraryDbLogo,
   },
   {
-    name: 'OSP Eccomerce Platform',
+    name: 'OSP E-commerce Platform',
     description: 'An ecommerce platform for online shopping and order management.',
     link: 'https://github.com/MithuusanK/OSP',
     logo: ospEcommerceLogo,
@@ -40,7 +40,7 @@ const projects = [
     logo: leaveAbsenceLogo,
   },
   {
-    name: 'Java Ecommerce System',
+    name: 'Java E-commerce System',
     description: 'A Java-based ecommerce system for product and order management.',
     link: 'https://github.com/MithuusanK/Java_Ecommerce_System',
     logo: javaEcommerceLogo,
@@ -54,7 +54,7 @@ const projects = [
   {
     name: 'Car Safety Dataset Evaluation',
     description: 'A project for evaluating car safety datasets and building predictive models.',
-    link: 'https://github.com/MithuusanK/Car_Safety_Evaluation',
+    link: 'https://car-safety-evaluation.vercel.app/',
     logo: carSafetyLogo,
   },
 ];
