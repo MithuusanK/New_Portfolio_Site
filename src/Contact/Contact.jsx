@@ -3,10 +3,10 @@ import React from 'react';
 const Contact = () => (
   <section id="contact" className="section contact-section">
     <h2 className="contact-title">Get In Touch</h2>
-    <p className="contact-info-desc" style={{ textAlign: 'center', maxWidth: '500px', margin: '0 auto 2.5rem auto' }}>
+    <p className="contact-info-desc">
       Whether you have a project idea, need coding help, or just want to connect, I'm always open to new opportunities. Reach out anytime!
     </p>
-    <div className="contact-bubble-row" style={{ display: 'flex', justifyContent: 'center', gap: '2rem', flexWrap: 'wrap' }}>
+    <div className="contact-bubble-row">
       <div className="contact-bubble">
         <span className="contact-bubble-label">Email</span>
         <span className="contact-bubble-value">mithuusank@gmail.com</span>

@@ -5,10 +5,13 @@ import About from './About/About';
 import Experience from './Experience/Experience';
 import Projects from './Projects/Projects';
 import Contact from './Contact/Contact';
+import { ThemeProvider, useTheme } from './ThemeContext';
 
-function App() {
+function AppContent() {
+  const { darkMode } = useTheme();
+  
   return (
-    <div className="App">
+    <div className={`App ${darkMode ? 'dark-mode' : ''}`}>
       <div className="animated-bg" />
       <Navbar />
       <main>
@@ -24,6 +27,14 @@ function App() {
         </span>
       </footer>
     </div>
+  );
+}
+
+function App() {
+  return (
+    <ThemeProvider>
+      <AppContent />
+    </ThemeProvider>
   );
 }
 

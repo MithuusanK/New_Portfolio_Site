@@ -1,7 +1,9 @@
 import React, { useState } from 'react';
+import { useTheme } from './ThemeContext';
 
 const Navbar = () => {
   const [open, setOpen] = useState(false);
+  const { darkMode, toggleDarkMode } = useTheme();
 
   return (
     <nav className="navbar">
@@ -24,6 +26,14 @@ const Navbar = () => {
           <li><a href="#projects">Projects</a></li>
           <li><a href="#contact">Contact</a></li>
         </ul>
+        <label className="theme-switch" aria-label={darkMode ? "Switch to light mode" : "Switch to dark mode"}>
+          <input 
+            type="checkbox" 
+            checked={darkMode} 
+            onChange={toggleDarkMode}
+          />
+          <span className="slider"></span>
+        </label>
       </div>
       {/* Sidebar and overlay only rendered when open */}
       <div className={`sidebar ${open ? 'open' : ''}`}>
@@ -41,6 +51,17 @@ const Navbar = () => {
           <li><a href="#projects" onClick={() => setOpen(false)}>Projects</a></li>
           <li><a href="#contact" onClick={() => setOpen(false)}>Contact</a></li>
         </ul>
+        <div className="sidebar-theme-toggle">
+          <span className="theme-label">{darkMode ? 'Dark' : 'Light'}</span>
+          <label className="theme-switch" aria-label={darkMode ? "Switch to light mode" : "Switch to dark mode"}>
+            <input 
+              type="checkbox" 
+              checked={darkMode} 
+              onChange={toggleDarkMode}
+            />
+            <span className="slider"></span>
+          </label>
+        </div>
       </div>
       {open && <div className="sidebar-overlay" onClick={() => setOpen(false)}></div>}
     </nav>

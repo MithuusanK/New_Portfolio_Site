@@ -101,91 +101,35 @@ const Experience = () => {
   return (
     <section id="experience" className="section">
       <h2>Experience</h2>
-      <div className="experience-card-list" style={{ display: 'flex', flexWrap: 'wrap', gap: '2rem', justifyContent: 'center' }}>
+      <div className="experience-card-list">
         {experiences.map((exp, idx) => (
           <div
             key={idx}
             className="experience-card"
-            style={{
-              background: '#fff',
-              borderRadius: '20px',
-              boxShadow: '0 4px 24px rgba(0,0,0,0.10)',
-              width: '340px',
-              minHeight: '320px',
-              display: 'flex',
-              flexDirection: 'column',
-              alignItems: 'center',
-              justifyContent: 'center',
-              cursor: 'pointer',
-              padding: '2rem 1.5rem 1.5rem 1.5rem',
-              transition: 'transform 0.2s',
-            }}
             onClick={() => handleCardClick(exp)}
           >
             {/* Logo placeholder */}
-            <div style={{
-              width: '180px',
-              height: '120px',
-              background: '#e3f2fd',
-              borderRadius: '16px',
-              marginBottom: '1.2rem',
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-              fontSize: '2.5rem',
-              color: '#0078d4',
-              overflow: 'hidden',
-            }}>
-              {exp.logo ? <img src={exp.logo} alt={exp.company} style={{ width: '100%', height: '100%', objectFit: 'contain' }} /> : <span>{exp.company[0]}</span>}
+            <div className="exp-logo">
+              {exp.logo ? <img src={exp.logo} alt={exp.company} /> : <span>{exp.company[0]}</span>}
             </div>
-            <h3 style={{ color: '#222', fontWeight: 700, fontSize: '1.3rem', margin: 0 }}>{exp.company}</h3>
-            <div style={{ color: '#444', fontSize: '1.05rem', margin: '0.5rem 0 0.2rem 0', textAlign: 'center' }}>{exp.role}</div>
-            <div style={{ color: '#666', fontSize: '0.98rem', marginBottom: '0.5rem', textAlign: 'center' }}>{exp.date}</div>
+            <h3>{exp.company}</h3>
+            <div className="exp-role">{exp.role}</div>
+            <div className="exp-date">{exp.date}</div>
           </div>
         ))}
       </div>
 
       {/* Modal Popup */}
       {modalOpen && selectedExp && (
-        <div className="exp-modal-overlay" style={{
-          position: 'fixed',
-          top: 0,
-          left: 0,
-          width: '100vw',
-          height: '100vh',
-          background: 'rgba(0,0,0,0.18)',
-          zIndex: 999,
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'center',
-        }} onClick={closeModal}>
-          <div className="exp-modal" style={{
-            background: '#fff',
-            borderRadius: '18px',
-            boxShadow: '0 4px 32px rgba(0,120,212,0.18)',
-            padding: '2.5rem 2rem',
-            minWidth: '320px',
-            maxWidth: '90vw',
-            textAlign: 'center',
-            position: 'relative',
-          }} onClick={e => e.stopPropagation()}>
-            <button onClick={closeModal} style={{
-              position: 'absolute',
-              top: '1rem',
-              right: '1rem',
-              background: 'none',
-              border: 'none',
-              fontSize: '2rem',
-              color: '#0078d4',
-              cursor: 'pointer',
-            }}>&times;</button>
-            <h2 style={{ color: '#0078d4', fontWeight: 700, fontSize: '2rem', marginBottom: '1.2rem' }}>{selectedExp.company}</h2>
-            <div style={{ color: '#222', fontSize: '1.15rem', marginBottom: '0.7rem' }}>{selectedExp.role}</div>
-            <div style={{ color: '#666', fontSize: '1rem', marginBottom: '1.2rem' }}>{selectedExp.date}</div>
-            {/* Experience Points line removed as requested */}
-            <ul style={{ textAlign: 'left', margin: '0 auto', maxWidth: '400px', paddingLeft: '1.2rem' }}>
+        <div className="exp-modal-overlay" onClick={closeModal}>
+          <div className="exp-modal" onClick={e => e.stopPropagation()}>
+            <button className="exp-modal-close" onClick={closeModal}>&times;</button>
+            <h2>{selectedExp.company}</h2>
+            <div className="exp-role">{selectedExp.role}</div>
+            <div className="exp-date">{selectedExp.date}</div>
+            <ul>
               {selectedExp.bullets.map((bullet, i) => (
-                <li key={i} style={{ color: '#222', fontSize: '1rem', marginBottom: '0.5rem' }}>{bullet}</li>
+                <li key={i}>{bullet}</li>
               ))}
             </ul>
           </div>

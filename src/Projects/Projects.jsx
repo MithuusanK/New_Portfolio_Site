@@ -62,48 +62,20 @@ const projects = [
 const Projects = () => (
   <section id="projects" className="section">
     <h2>Projects</h2>
-    <div className="experience-card-list" style={{ display: 'flex', flexWrap: 'wrap', gap: '2rem', justifyContent: 'center' }}>
+    <div className="experience-card-list">
       {projects.map((project, idx) => (
         <a
           key={idx}
-          className="experience-card"
+          className="experience-card project-card-link"
           href={project.link}
           target="_blank"
           rel="noopener noreferrer"
-          style={{
-            background: '#fff',
-            borderRadius: '20px',
-            boxShadow: '0 4px 24px rgba(0,0,0,0.10)',
-            width: '340px',
-            minHeight: '320px',
-            display: 'flex',
-            flexDirection: 'column',
-            alignItems: 'center',
-            justifyContent: 'center',
-            cursor: 'pointer',
-            padding: '2rem 1.5rem 1.5rem 1.5rem',
-            transition: 'transform 0.2s',
-            textDecoration: 'none',
-            color: 'inherit',
-          }}
         >
-          <div style={{
-            width: '180px',
-            height: '120px',
-            background: '#e3f2fd',
-            borderRadius: '16px',
-            marginBottom: '1.2rem',
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            fontSize: '2.5rem',
-            color: '#0078d4',
-            overflow: 'hidden',
-          }}>
-            {project.logo ? <img src={project.logo} alt={project.name} style={{ width: '100%', height: '100%', objectFit: 'contain' }} /> : <span>{project.name[0]}</span>}
+          <div className="exp-logo">
+            {project.logo ? <img src={project.logo} alt={project.name} /> : <span>{project.name[0]}</span>}
           </div>
-          <h3 style={{ color: '#222', fontWeight: 700, fontSize: '1.3rem', margin: 0 }}>{project.name}</h3>
-          <div style={{ color: '#444', fontSize: '1.05rem', margin: '0.5rem 0 0.2rem 0', textAlign: 'center' }}>{project.description}</div>
+          <h3>{project.name}</h3>
+          <div className="exp-role">{project.description}</div>
         </a>
       ))}
     </div>
