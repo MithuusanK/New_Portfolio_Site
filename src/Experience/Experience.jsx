@@ -8,18 +8,6 @@ import muiaLogo from '../assets/Muia.png';
 import mtcLogo from '../assets/manufacturing_and_technology_centre_logo.jpg';
 
 const experiences = [
-    {
-    role: "Software Developer",
-    company: "Manufacturing & Technology Centre",
-    location: "Toronto, ON",
-    date: "Dec 2025 – Present",
-    logo: mtcLogo,
-    bullets: [
-      "Built and updated ASP.NET applications integrated with SQL Server, enabling data-driven internal tools and reporting interfaces",
-      "Designed and optimized SQL queries and validation logic to improve data reliability and reduce manual effort",
-      "Developed and maintained internal enterprise applications using .NET (VB) across WPF and WinForms for core workflows"
-    ]
-  },
   {
     role: "Program Officer (Data & Analytics)",
     company: "Stephen Lewis Foundation",
