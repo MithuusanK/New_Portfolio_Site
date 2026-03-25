@@ -59,6 +59,8 @@ const FALLBACK_PROJECTS = [
   },
 ];
 
+const GITHUB_REPOSITORIES_URL = 'https://github.com/MithuusanK?tab=repositories';
+
 const FALLBACK_REPOSITORIES = FALLBACK_PROJECTS.map((project) => ({
   name: project.name,
   repoUrl: project.repoUrl,
@@ -239,6 +241,16 @@ const Projects = () => {
               </li>
             ))}
           </ul>
+          <div className="repo-footer">
+            <a
+              href={GITHUB_REPOSITORIES_URL}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="repo-view-all"
+            >
+              View all repositories
+            </a>
+          </div>
         </aside>
 
         <div className="pinned-projects-panel">

@@ -77,6 +77,22 @@ const getHeatLevel = (count) => {
   return 'level-4';
 };
 
+const tooltipDateFormatter = new Intl.DateTimeFormat('en-US', {
+  weekday: 'short',
+  month: 'short',
+  day: 'numeric',
+});
+
+const formatTooltipDate = (dateString) => {
+  const date = new Date(dateString);
+
+  if (Number.isNaN(date.getTime())) {
+    return 'this day';
+  }
+
+  return tooltipDateFormatter.format(date);
+};
+
 const GitHubActivity = () => {
   const [activity, setActivity] = useState(FALLBACK_ACTIVITY);
 
@@ -170,7 +186,8 @@ const GitHubActivity = () => {
                   <span
                     key={day.date}
                     className={`activity-day-cell ${getHeatLevel(day.contributionCount)}`}
-                    title={`${day.date}: ${day.contributionCount} contributions`}
+                    data-tooltip={`${day.contributionCount} contribution${day.contributionCount === 1 ? '' : 's'} on ${formatTooltipDate(day.date)}`}
+                    aria-label={`${day.contributionCount} contribution${day.contributionCount === 1 ? '' : 's'} on ${formatTooltipDate(day.date)}`}
                   />
                 ))}
               </div>
