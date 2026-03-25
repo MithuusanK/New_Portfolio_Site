@@ -1,130 +1,121 @@
-
-import React, { useState } from 'react';
+import React from 'react';
 import stephenLewisLogo from '../assets/Stephen Lewis Foundation.png';
 import aquazenLogo from '../assets/Aquazen Services.png';
 import riipenLogo from '../assets/Riipen.png';
 import equitableLogo from '../assets/Equitable Bank.png';
 import muiaLogo from '../assets/Muia.png';
-import mtcLogo from '../assets/manufacturing_and_technology_centre_logo.jpg';
 
 const experiences = [
   {
-    role: "Program Officer (Data & Analytics)",
-    company: "Stephen Lewis Foundation",
-    location: "Toronto, ON",
-    date: "Oct 2024 - Dec 2025",
+    role: 'Program Officer (Data and Analytics)',
+    company: 'Stephen Lewis Foundation',
+    location: 'Toronto, ON',
+    date: 'Oct 2024 - Dec 2025',
     logo: stephenLewisLogo,
+    stack: ['Power BI', 'DAX', 'SQL', 'Power Query'],
     bullets: [
-      "Designed and deployed a Power BI dashboard automating data intake from Microsoft Forms, reducing manual reporting times.",
-      "Built custom metrics with DAX and Power Query, improving reporting accuracy by 25%.",
-      "Managed SQL and Excel-based data sources, ensuring data consistency and accessibility across 3+ teams.",
-      "Collaborated with cross-functional teams to define data requirements, delivering insights that supported funding strategies and improved stakeholder reporting efficiency."
-    ]
+      'Designed and deployed a Power BI dashboard automating Microsoft Forms data intake and reducing manual reporting time.',
+      'Built custom metrics with DAX and Power Query, improving reporting accuracy by 25 percent.',
+      'Coordinated SQL and Excel data sources across 3+ teams to improve consistency and reporting velocity.',
+    ],
   },
   {
-    role: "Software Engineer - AI",
-    company: "Muia Consulting",
-    location: "Toronto, ON",
-    date: "Sep 2025 – Dec 2025",
+    role: 'Software Engineer - AI',
+    company: 'Muia Consulting',
+    location: 'Toronto, ON',
+    date: 'Sep 2025 - Dec 2025',
     logo: muiaLogo,
+    stack: ['FastAPI', 'Vue', 'OAuth 2.0', 'Data Validation'],
     bullets: [
-      "Developed scalable FastAPI backend services and a Vue.js (Vite) frontend to upload, validate, and process tax documents.",
-      "Engineered backend validation and data-check pipelines, achieving 98% processing accuracy across supported tax documents.",
-      "Integrated secure Google Drive OAuth 2.0 workflows to automatically store generated tax filings and documents."
-    ]
+      'Built scalable FastAPI services and a Vue frontend for uploading, validating, and processing tax documents.',
+      'Engineered validation pipelines that reached 98 percent processing accuracy.',
+      'Integrated secure Google Drive OAuth 2.0 workflows to automate document delivery.',
+    ],
   },
   {
-    role: "Full-Stack Developer",
-    company: "Aquazen Services",
-    location: "Toronto, ON",
-    date: "May 2025 – Sep 2025",
+    role: 'Full Stack Developer',
+    company: 'Aquazen Services',
+    location: 'Toronto, ON',
+    date: 'May 2025 - Sep 2025',
     logo: aquazenLogo,
+    stack: ['Next.js', 'Redux', 'Node.js', 'PostgreSQL'],
     bullets: [
-      "Revamped a full-stack web app by modernizing Next.js front-end components and integrating Redux, boosting scalability and enabling faster feature development.",
-      "Optimized REST APIs in Node.js + PostgreSQL, cutting response latency by 20% and improving system efficiency across high-traffic endpoints.",
-      "Designed and tested robust database schemas and pagination features, increasing reliability for 200+ daily transactions and minimizing downtime.",
-      "Applied Agile practices and Git workflows, reducing release cycles while improving cross-team collaboration."
-    ]
+      'Revamped a full-stack web app with modern Next.js components and Redux state architecture.',
+      'Optimized REST APIs in Node.js and PostgreSQL, cutting response latency by 20 percent.',
+      'Designed pagination and schema updates to support 200+ daily transactions reliably.',
+    ],
   },
   {
-    role: "Web Developer - DJ Business Site",
-    company: "Riipen",
-    location: "Toronto, ON",
-    date: "Jan 2025 – Apr 2025",
+    role: 'Web Developer - DJ Business Site',
+    company: 'Riipen',
+    location: 'Toronto, ON',
+    date: 'Jan 2025 - Apr 2025',
     logo: riipenLogo,
+    stack: ['SEO', 'Google Analytics', 'Scrum', 'Frontend QA'],
     bullets: [
-      "Delivered a responsive DJ business website using the Scrum framework, ensuring on-time delivery.",
-      "Applied SEO + Google Analytics, increasing traffic by 25% and improving site reliability with testing.",
-      "Integrated the Google Business Profile API to display real-time reviews, boosting user trust and engagement."
-    ]
+      'Delivered a responsive client site under Scrum timelines with production-ready reliability.',
+      'Applied SEO and analytics improvements that increased traffic by 25 percent.',
+      'Integrated Google Business Profile API data to boost trust and engagement.',
+    ],
   },
   {
-    role: "Cloud & DevOps Engineer Intern",
-    company: "Equitable Bank",
-    location: "Toronto, ON",
-    date: "May 2022 – Dec 2022",
+    role: 'Cloud and DevOps Engineer Intern',
+    company: 'Equitable Bank',
+    location: 'Toronto, ON',
+    date: 'May 2022 - Dec 2022',
     logo: equitableLogo,
+    stack: ['Jenkins', 'Kibana', 'CI/CD', 'Confluence'],
     bullets: [
-      "Automated CI/CD pipelines with Jenkins, cutting manual deployments by 30% and increasing delivery speed and consistency.",
-      "Deployed monitoring dashboards with Kibana, improving system visibility and reducing incident response time by 25%.",
-      "Created 20+ Confluence team pages, streamlining onboarding and reducing ramp-up time."
-    ]
-  }
+      'Automated CI/CD pipelines with Jenkins and reduced manual deployment effort by 30 percent.',
+      'Built monitoring dashboards with Kibana to improve response time by 25 percent.',
+      'Documented onboarding guides and team pages that shortened new-hire ramp-up.',
+    ],
+  },
 ];
 
-const Experience = () => {
-  const [modalOpen, setModalOpen] = useState(false);
-  const [selectedExp, setSelectedExp] = useState(null);
+const Experience = () => (
+  <section id="experience" className="section">
+    <h2 className="section-title">$ git log --experience --timeline</h2>
 
-  const handleCardClick = (exp) => {
-    setSelectedExp(exp);
-    setModalOpen(true);
-  };
+    <div className="timeline">
+      {experiences.map((exp, index) => (
+        <article key={exp.company} className={`timeline-item ${index % 2 ? 'right' : 'left'}`}>
+          <span className="timeline-node" aria-hidden="true" />
 
-  const closeModal = () => {
-    setModalOpen(false);
-    setSelectedExp(null);
-  };
-
-  return (
-    <section id="experience" className="section">
-      <h2>Experience</h2>
-      <div className="experience-card-list">
-        {experiences.map((exp, idx) => (
-          <div
-            key={idx}
-            className="experience-card"
-            onClick={() => handleCardClick(exp)}
-          >
-            {/* Logo placeholder */}
-            <div className="exp-logo">
-              {exp.logo ? <img src={exp.logo} alt={exp.company} /> : <span>{exp.company[0]}</span>}
+          <div className="panel timeline-card">
+            <div className="timeline-header">
+              <span className="commit-tag">exp-{String(index + 1).padStart(2, '0')}</span>
+              <span className="date-tag">{exp.date}</span>
             </div>
-            <h3>{exp.company}</h3>
-            <div className="exp-role">{exp.role}</div>
-            <div className="exp-date">{exp.date}</div>
-          </div>
-        ))}
-      </div>
 
-      {/* Modal Popup */}
-      {modalOpen && selectedExp && (
-        <div className="exp-modal-overlay" onClick={closeModal}>
-          <div className="exp-modal" onClick={e => e.stopPropagation()}>
-            <button className="exp-modal-close" onClick={closeModal}>&times;</button>
-            <h2>{selectedExp.company}</h2>
-            <div className="exp-role">{selectedExp.role}</div>
-            <div className="exp-date">{selectedExp.date}</div>
+            <div className="timeline-company-row">
+              <div className="timeline-logo">
+                <img src={exp.logo} alt={`${exp.company} logo`} />
+              </div>
+              <div>
+                <h3>{exp.role}</h3>
+                <p>{exp.company} - {exp.location}</p>
+              </div>
+            </div>
+
             <ul>
-              {selectedExp.bullets.map((bullet, i) => (
-                <li key={i}>{bullet}</li>
+              {exp.bullets.map((bullet) => (
+                <li key={bullet}>{bullet}</li>
               ))}
             </ul>
+
+            <div className="chip-row">
+              {exp.stack.map((item) => (
+                <span key={item} className="chip">
+                  {item}
+                </span>
+              ))}
+            </div>
           </div>
-        </div>
-      )}
-    </section>
-  );
-};
+        </article>
+      ))}
+    </div>
+  </section>
+);
 
 export default Experience;
