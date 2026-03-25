@@ -64,7 +64,6 @@ const FALLBACK_REPOSITORIES = FALLBACK_PROJECTS.map((project) => ({
   repoUrl: project.repoUrl,
   primaryLanguage: project.stack[0] ? { name: project.stack[0] } : null,
   visibility: 'public',
-  updatedAt: '',
 }));
 
 const normalizeName = (name = '') => name.toLowerCase().replace(/[^a-z0-9]/g, '');
@@ -159,42 +158,6 @@ const formatRepoData = (repo) => {
   };
 };
 
-const formatRelativeUpdate = (updatedAt) => {
-  if (!updatedAt) {
-    return 'Updated recently';
-  }
-
-  const updatedDate = new Date(updatedAt);
-
-  if (Number.isNaN(updatedDate.getTime())) {
-    return 'Updated recently';
-  }
-
-  const diffMs = updatedDate.getTime() - Date.now();
-  const diffDays = Math.round(diffMs / (1000 * 60 * 60 * 24));
-
-  if (Math.abs(diffDays) < 1) {
-    const diffHours = Math.round(diffMs / (1000 * 60 * 60));
-    if (Math.abs(diffHours) < 1) {
-      return 'Updated today';
-    }
-    return `Updated ${Math.abs(diffHours)} hour${Math.abs(diffHours) === 1 ? '' : 's'} ago`;
-  }
-
-  if (Math.abs(diffDays) < 30) {
-    return `Updated ${Math.abs(diffDays)} day${Math.abs(diffDays) === 1 ? '' : 's'} ago`;
-  }
-
-  const diffMonths = Math.round(diffMs / (1000 * 60 * 60 * 24 * 30));
-
-  if (Math.abs(diffMonths) < 12) {
-    return `Updated ${Math.abs(diffMonths)} month${Math.abs(diffMonths) === 1 ? '' : 's'} ago`;
-  }
-
-  const diffYears = Math.round(diffMs / (1000 * 60 * 60 * 24 * 365));
-  return `Updated ${Math.abs(diffYears)} year${Math.abs(diffYears) === 1 ? '' : 's'} ago`;
-};
-
 const Projects = () => {
   const [projects, setProjects] = useState(FALLBACK_PROJECTS);
   const [repositories, setRepositories] = useState(FALLBACK_REPOSITORIES);
@@ -217,7 +180,6 @@ const Projects = () => {
           repoUrl: repo.repoUrl || repo.link,
           primaryLanguage: repo.primaryLanguage,
           visibility: repo.visibility || 'public',
-          updatedAt: repo.updatedAt || '',
         }));
 
         if (!isCancelled && repos.length > 0) {
@@ -266,7 +228,6 @@ const Projects = () => {
                         <span className="repo-language-dot" />
                         {repository.primaryLanguage?.name || 'Software Project'}
                       </span>
-                      <span className="repo-updated">{formatRelativeUpdate(repository.updatedAt)}</span>
                     </div>
                   </a>
                 ) : (
