@@ -1,7 +1,7 @@
 import React, { useEffect, useRef, useState } from 'react';
 import profilePic from '../assets/profile.jpg';
 
-const initialAssistantMessage = `I'm Mithuusan's AI assistant. Ask me about Work, About Me, Skills, or Contact, and I'll keep it clear and professional.`;
+const initialAssistantMessage = `I'm Mithuusan's AI assistant. Ask me about anything!`;
 
 const quickPrompts = [
   { label: 'Work', prompt: "Summarize Mithuusan's work experience and measurable impact." },
@@ -10,7 +10,7 @@ const quickPrompts = [
   { label: 'Contact', prompt: 'How can someone contact Mithuusan for opportunities?' },
 ];
 
-const fallbackReply = `I could not reach the live model right now. You can still ask about Mithuusan's experience, skills, projects, and team fit, or contact him directly at mithuusank@gmail.com.`;
+const fallbackReply = `I could not reach the live model right now. You can still ask about Mithuusan's experience, skills, projects, and fit, or contact him at mithuusank@gmail.com.`;
 
 const normalizeAssistantText = (text = '') =>
   text
@@ -35,13 +35,22 @@ const AIAssistant = () => {
   }, [isOpen, messages, isThinking]);
 
   const requestAssistantReply = async (conversation) => {
-    const response = await fetch('/.netlify/functions/portfolio-chat', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        messages: conversation.slice(-10),
-      }),
-    });
+    const controller = new AbortController();
+    const timeoutId = setTimeout(() => controller.abort(), 15000);
+    let response;
+
+    try {
+      response = await fetch('/.netlify/functions/portfolio-chat', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        signal: controller.signal,
+        body: JSON.stringify({
+          messages: conversation.slice(-8),
+        }),
+      });
+    } finally {
+      clearTimeout(timeoutId);
+    }
 
     const payload = await response.json();
 
@@ -69,9 +78,8 @@ const AIAssistant = () => {
     try {
       const reply = await requestAssistantReply(nextConversation);
       setMessages((prev) => [...prev, { role: 'assistant', text: normalizeAssistantText(reply) }]);
-    } catch (error) {
-      const reason = error instanceof Error ? error.message : 'Unknown error';
-      setMessages((prev) => [...prev, { role: 'assistant', text: `${fallbackReply}\n\nReason: ${reason}` }]);
+    } catch {
+      setMessages((prev) => [...prev, { role: 'assistant', text: fallbackReply }]);
     } finally {
       setIsThinking(false);
     }

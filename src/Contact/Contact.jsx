@@ -38,8 +38,8 @@ const Contact = () => (
       <article className="panel contact-actions-card">
         <header>sendMessage.ts</header>
         <p>
-          Interested in collaborating or discussing a role? Launch a message and I
-          will get back to you quickly.
+          Interested in collaborating or discussing a role? Send a message and I
+          will respond as soon as possible!
         </p>
 
         <div className="contact-actions-grid">

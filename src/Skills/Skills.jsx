@@ -1,102 +1,24 @@
-﻿import React, { useEffect, useMemo, useRef, useState } from 'react';
+import React, { useEffect, useMemo, useRef, useState } from 'react';
+import awsLogo from '../assets/aws.svg';
+import javaLogo from '../assets/java.svg';
 
 const skills = [
-  {
-    name: 'Java',
-    logo: 'https://cdn.simpleicons.org/openjdk/ED8B00',
-  },
-  {
-    name: 'Python',
-    logo: 'https://cdn.simpleicons.org/python/3776AB',
-  },
-  {
-    name: 'TypeScript',
-    logo: 'https://cdn.simpleicons.org/typescript/3178C6',
-  },
-  {
-    name: 'JavaScript',
-    logo: 'https://cdn.simpleicons.org/javascript/F7DF1E',
-  },
-  {
-    name: 'React',
-    logo: 'https://cdn.simpleicons.org/react/61DAFB',
-  },
-  {
-    name: 'Next.js',
-    logo: 'https://cdn.simpleicons.org/nextdotjs/FFFFFF',
-  },
-  {
-    name: 'React Native',
-    logo: 'https://cdn.simpleicons.org/react/61DAFB',
-  },
-  {
-    name: 'Tailwind CSS',
-    logo: 'https://cdn.simpleicons.org/tailwindcss/38BDF8',
-  },
-  {
-    name: 'Vite',
-    logo: 'https://cdn.simpleicons.org/vite/646CFF',
-  },
-  {
-    name: 'FastAPI',
-    logo: 'https://cdn.simpleicons.org/fastapi/009688',
-  },
-  {
-    name: 'Node.js',
-    logo: 'https://cdn.simpleicons.org/nodedotjs/5FA04E',
-  },
-  {
-    name: 'Express.js',
-    logo: 'https://cdn.simpleicons.org/express/FFFFFF',
-  },
-  {
-    name: 'PostgreSQL',
-    logo: 'https://cdn.simpleicons.org/postgresql/4169E1',
-  },
-  {
-    name: 'Supabase',
-    logo: 'https://cdn.simpleicons.org/supabase/3ECF8E',
-  },
-  {
-    name: 'AWS',
-    logo: 'https://cdn.simpleicons.org/amazonaws/FF9900',
-  },
-  {
-    name: 'AWS Bedrock',
-    logo: 'https://cdn.simpleicons.org/amazonaws/FF9900',
-  },
-  {
-    name: 'Google Document AI',
-    logo: 'https://cdn.simpleicons.org/googlecloud/4285F4',
-  },
-  {
-    name: 'Google Gemini',
-    logo: 'https://cdn.simpleicons.org/googlegemini/8E75FF',
-  },
-  {
-    name: 'OpenAI API',
-    logo: 'https://cdn.simpleicons.org/openai/FFFFFF',
-  },
-  {
-    name: 'Power BI',
-    logo: 'https://cdn.simpleicons.org/powerbi/F2C811',
-  },
-  {
-    name: 'Docker',
-    logo: 'https://cdn.simpleicons.org/docker/2496ED',
-  },
-  {
-    name: 'Git',
-    logo: 'https://cdn.simpleicons.org/git/F05032',
-  },
-  {
-    name: 'Jenkins',
-    logo: 'https://cdn.simpleicons.org/jenkins/D24939',
-  },
-  {
-    name: 'Linux',
-    logo: 'https://cdn.simpleicons.org/linux/FCC624',
-  },
+  { name: 'TypeScript', logo: 'https://cdn.simpleicons.org/typescript/3178C6' },
+  { name: 'JavaScript', logo: 'https://cdn.simpleicons.org/javascript/F7DF1E' },
+  { name: 'Python', logo: 'https://cdn.simpleicons.org/python/3776AB' },
+  { name: 'Java', logo: javaLogo, imageScale: 0.6 },
+  { name: 'React', logo: 'https://cdn.simpleicons.org/react/61DAFB' },
+  { name: 'React Native', logo: 'https://cdn.simpleicons.org/react/61DAFB' },
+  { name: 'Next.js', logo: 'https://cdn.simpleicons.org/nextdotjs/FFFFFF' },
+  { name: 'Node.js', logo: 'https://cdn.simpleicons.org/nodedotjs/5FA04E' },
+  { name: 'FastAPI', logo: 'https://cdn.simpleicons.org/fastapi/009688' },
+  { name: 'PostgreSQL', logo: 'https://cdn.simpleicons.org/postgresql/4169E1' },
+  { name: 'Supabase', logo: 'https://cdn.simpleicons.org/supabase/3ECF8E' },
+  { name: 'AWS', logo: awsLogo },
+  { name: 'Docker', logo: 'https://cdn.simpleicons.org/docker/2496ED' },
+  { name: 'Git', logo: 'https://cdn.simpleicons.org/git/F05032' },
+  { name: 'Jenkins', logo: 'https://cdn.simpleicons.org/jenkins/D24939' },
+  { name: 'Linux', logo: 'https://cdn.simpleicons.org/linux/FCC624' },
 ];
 
 const clamp = (value, min, max) => Math.min(max, Math.max(min, value));
@@ -222,14 +144,16 @@ const Skills = () => {
   const dragRef = useRef({ active: false, pointerId: null, x: 0, y: 0 });
   const rotationRef = useRef({ x: -0.28, y: 0.65 });
   const velocityRef = useRef({ x: 0.00045, y: 0.00075 });
+  const hoveredSkillNameRef = useRef(null);
 
   const [size, setSize] = useState({ width: 740, height: 620 });
   const [scene, setScene] = useState({ nodes: [], edges: [], latRings: [], lonRings: [] });
+  const [hoveredSkillName, setHoveredSkillName] = useState(null);
 
   const radius = Math.min(245, Math.max(180, size.width * 0.28));
-
-  const basePoints = useMemo(() => createSpherePoints(skills.length, radius), [radius]);
-  const edgePairs = useMemo(() => createEdgePairs(basePoints, 3), [basePoints]);
+  const nodePoints = useMemo(() => createSpherePoints(skills.length, radius), [radius]);
+  const meshPoints = useMemo(() => createSpherePoints(72, radius), [radius]);
+  const meshEdgePairs = useMemo(() => createEdgePairs(meshPoints, 4), [meshPoints]);
 
   useEffect(() => {
     const element = globeRef.current;
@@ -267,8 +191,8 @@ const Skills = () => {
         .map((projected) => `${projected.x.toFixed(2)},${projected.y.toFixed(2)}`)
         .join(' ');
 
-    const latSamples = [-0.72, -0.38, 0, 0.38, 0.72].map((lat) => sampleLatitude(radius, lat));
-    const lonSamples = [0, Math.PI / 3, (2 * Math.PI) / 3].map((lon) => sampleMeridian(radius, lon));
+    const latSamples = [-0.72, -0.36, 0, 0.38, 0.72].map((lat) => sampleLatitude(radius, lat));
+    const lonSamples = [Math.PI / 4, (-2 * Math.PI) / 5].map((lon) => sampleMeridian(radius, lon));
 
     const animate = (timestamp) => {
       const delta = Math.min(32, timestamp - previousTime);
@@ -293,11 +217,26 @@ const Skills = () => {
       const rotationX = rotationRef.current.x;
       const rotationY = rotationRef.current.y;
 
-      const projectedNodes = basePoints.map((basePoint, index) => {
+      const projectedNodes = nodePoints.map((basePoint, index) => {
         const rotated = rotatePoint(basePoint, rotationX, rotationY);
         const projected = projectPoint(rotated, size.width, size.height, radius);
         const depth = projected.depth;
-        const logoSize = clamp(20 + projected.scale * 12, 16, 46);
+        const isHovered = hoveredSkillNameRef.current === skills[index].name;
+
+        let scale =
+          depth > 0.66
+            ? 1.02 + (depth - 0.66) * 1.1
+            : depth > 0.34
+              ? 0.74 + (depth - 0.34) * 0.92
+              : 0.52 + depth * 0.45;
+        let opacity = depth > 0.66 ? 1 : depth > 0.34 ? 0.54 + depth * 0.34 : 0.22 + depth * 0.3;
+
+        if (isHovered) {
+          scale *= 1.16;
+          opacity = 1;
+        }
+
+        const logoSize = clamp(25 + projected.scale * 8.5, 18, 44);
 
         return {
           ...skills[index],
@@ -305,25 +244,35 @@ const Skills = () => {
           y: projected.y,
           z: rotated.z,
           depth,
-          opacity: clamp(0.24 + depth * 0.92, 0.18, 1),
-          scale: clamp(projected.scale, 0.56, 1.95),
+          opacity,
+          scale: clamp(scale, 0.48, 1.62),
           logoSize,
         };
       });
 
-      const projectedEdges = edgePairs
-        .map(([from, to]) => ({
-          from: projectedNodes[from],
-          to: projectedNodes[to],
-        }))
-        .filter(({ from, to }) => from.depth > 0.08 || to.depth > 0.08)
-        .map(({ from, to }) => ({
-          x1: from.x,
-          y1: from.y,
-          x2: to.x,
-          y2: to.y,
-          opacity: clamp((from.depth + to.depth) / 2, 0.12, 0.58),
+      const projectedMeshPoints = meshPoints
+        .map((point) => rotatePoint(point, rotationX, rotationY))
+        .map((rotated) => ({
+          rotated,
+          projected: projectPoint(rotated, size.width, size.height, radius),
         }));
+
+      const projectedEdges = meshEdgePairs
+        .map(([from, to]) => {
+          const start = projectedMeshPoints[from];
+          const end = projectedMeshPoints[to];
+          return {
+            x1: start.projected.x,
+            y1: start.projected.y,
+            x2: end.projected.x,
+            y2: end.projected.y,
+            opacity: clamp(
+              ((start.projected.depth + end.projected.depth) / 2) * 0.52,
+              0.12,
+              0.42
+            ),
+          };
+        });
 
       const latRings = latSamples.map((samples) => buildPolyline(samples, rotationX, rotationY));
       const lonRings = lonSamples.map((samples) => buildPolyline(samples, rotationX, rotationY));
@@ -345,7 +294,16 @@ const Skills = () => {
     return () => {
       window.cancelAnimationFrame(rafId);
     };
-  }, [basePoints, edgePairs, radius, size.height, size.width]);
+  }, [meshEdgePairs, meshPoints, nodePoints, radius, size.height, size.width]);
+
+  const hoveredSkill =
+    hoveredSkillName && scene.nodes.length
+      ? scene.nodes.find((node) => node.name === hoveredSkillName) || null
+      : null;
+
+  useEffect(() => {
+    hoveredSkillNameRef.current = hoveredSkillName;
+  }, [hoveredSkillName]);
 
   const onPointerDown = (event) => {
     dragRef.current.active = true;
@@ -410,6 +368,18 @@ const Skills = () => {
           role="application"
           aria-label="Interactive spinning skills globe"
         >
+          {hoveredSkill ? (
+            <div
+              className="skills-node-tooltip"
+              style={{
+                left: hoveredSkill.x,
+                top: hoveredSkill.y,
+              }}
+            >
+              {hoveredSkill.name}
+            </div>
+          ) : null}
+
           <svg className="skills-network" viewBox={`0 0 ${size.width} ${size.height}`} aria-hidden="true">
             {scene.latRings.map((ring, index) => (
               <polyline key={`lat-${index}`} points={ring} className="sphere-lat" />
@@ -443,10 +413,15 @@ const Skills = () => {
                   top: node.y,
                   width: node.logoSize,
                   height: node.logoSize,
+                  '--icon-scale': node.imageScale || 0.8,
                   opacity: node.opacity,
                   transform: `translate(-50%, -50%) scale(${node.scale})`,
                   zIndex: Math.round(10 + node.depth * 30),
                 }}
+                onMouseEnter={() => setHoveredSkillName(node.name)}
+                onFocus={() => setHoveredSkillName(node.name)}
+                onMouseLeave={() => setHoveredSkillName(null)}
+                onBlur={() => setHoveredSkillName(null)}
                 tabIndex={-1}
               >
                 <img
@@ -464,7 +439,6 @@ const Skills = () => {
                       node.fallbackLogo || 'https://cdn.simpleicons.org/codeforces/6B7CFF';
                   }}
                 />
-                <span>{node.name}</span>
               </button>
             ))}
           </div>
@@ -477,3 +451,4 @@ const Skills = () => {
 };
 
 export default Skills;
+
