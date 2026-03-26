@@ -40,15 +40,15 @@ const languageColorMap = {
   'Jupyter Notebook': '#da5b0b',
 };
 
-const toIsoDate = (date) => date.toISOString().slice(0, 10);
+const computeStreaks = (days, cutoffDate) => {
+  const relevantDays = (days || []).filter((day) => day?.date && day.date <= cutoffDate);
 
-const computeStreaks = (days) => {
   let longest = 0;
   let running = 0;
   let bestDay = 0;
   let bestDayDate = '';
 
-  for (const day of days) {
+  for (const day of relevantDays) {
     if (day.contributionCount > 0) {
       running += 1;
       if (running > longest) {
@@ -65,8 +65,19 @@ const computeStreaks = (days) => {
   }
 
   let current = 0;
-  for (let index = days.length - 1; index >= 0; index -= 1) {
-    if (days[index].contributionCount > 0) {
+  let startIndex = relevantDays.length - 1;
+
+  // If today's cell is still zero, keep the streak anchored to yesterday.
+  if (
+    startIndex >= 0 &&
+    relevantDays[startIndex].date === cutoffDate &&
+    relevantDays[startIndex].contributionCount === 0
+  ) {
+    startIndex -= 1;
+  }
+
+  for (let index = startIndex; index >= 0; index -= 1) {
+    if (relevantDays[index].contributionCount > 0) {
       current += 1;
     } else {
       break;
@@ -129,9 +140,9 @@ export const handler = async (event) => {
     };
   }
 
-  const now = new Date();
-  const fromDate = new Date(Date.UTC(now.getUTCFullYear() - 1, now.getUTCMonth(), now.getUTCDate() + 1));
-  const toDate = now;
+  const toDate = new Date();
+  const fromDate = new Date(toDate);
+  fromDate.setUTCDate(fromDate.getUTCDate() - 364);
 
   try {
     const [activityResponse, reposResponse] = await Promise.all([
@@ -145,8 +156,8 @@ export const handler = async (event) => {
           query: activityQuery,
           variables: {
             login: username,
-            from: `${toIsoDate(fromDate)}T00:00:00Z`,
-            to: `${toIsoDate(toDate)}T23:59:59Z`,
+            from: fromDate.toISOString(),
+            to: toDate.toISOString(),
           },
         }),
       }),
@@ -206,20 +217,21 @@ export const handler = async (event) => {
     }));
 
     const allDays = weeks.flatMap((week) => week.days);
-    const streaks = computeStreaks(allDays);
+    const cutoffDate = toDate.toISOString().slice(0, 10);
+    const streaks = computeStreaks(allDays, cutoffDate);
     const topLanguages = computeTopLanguages(reposPayload);
 
     return {
       statusCode: 200,
       headers: {
         'Content-Type': 'application/json',
-        'Cache-Control': 'public, max-age=300',
+        'Cache-Control': 'no-store',
       },
       body: JSON.stringify({
         source: 'github_activity',
         username,
-        from: toIsoDate(fromDate),
-        to: toIsoDate(toDate),
+        from: fromDate.toISOString().slice(0, 10),
+        to: toDate.toISOString().slice(0, 10),
         totalContributions: calendar.totalContributions || 0,
         currentStreak: streaks.currentStreak,
         longestStreak: streaks.longestStreak,

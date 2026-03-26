@@ -81,6 +81,7 @@ const tooltipDateFormatter = new Intl.DateTimeFormat('en-US', {
   weekday: 'short',
   month: 'short',
   day: 'numeric',
+  timeZone: 'UTC',
 });
 
 const formatTooltipDate = (dateString) => {
@@ -93,6 +94,44 @@ const formatTooltipDate = (dateString) => {
   return tooltipDateFormatter.format(date);
 };
 
+const computeCurrentStreakFromWeeks = (weeks = []) => {
+  const allDays = weeks
+    .flatMap((week) => week.days || [])
+    .filter((day) => day?.date)
+    .sort((a, b) => a.date.localeCompare(b.date));
+
+  if (!allDays.length) {
+    return 0;
+  }
+
+  const todayIso = new Date().toISOString().slice(0, 10);
+  const relevantDays = allDays.filter((day) => day.date <= todayIso);
+
+  if (!relevantDays.length) {
+    return 0;
+  }
+
+  let index = relevantDays.length - 1;
+
+  if (
+    relevantDays[index].date === todayIso &&
+    Number(relevantDays[index].contributionCount || 0) === 0
+  ) {
+    index -= 1;
+  }
+
+  let streak = 0;
+  for (; index >= 0; index -= 1) {
+    if (Number(relevantDays[index].contributionCount || 0) > 0) {
+      streak += 1;
+    } else {
+      break;
+    }
+  }
+
+  return streak;
+};
+
 const GitHubActivity = () => {
   const [activity, setActivity] = useState(FALLBACK_ACTIVITY);
 
@@ -101,7 +140,10 @@ const GitHubActivity = () => {
 
     const loadActivity = async () => {
       try {
-        const response = await fetch(`/.netlify/functions/github-activity?username=${USERNAME}`);
+        const response = await fetch(
+          `/.netlify/functions/github-activity?username=${USERNAME}&ts=${Date.now()}`,
+          { cache: 'no-store' }
+        );
         const payload = await response.json();
 
         if (!response.ok) {
@@ -109,14 +151,15 @@ const GitHubActivity = () => {
         }
 
         if (!cancelled) {
+          const weeksData = payload.weeks?.length ? payload.weeks : FALLBACK_ACTIVITY.weeks;
           setActivity({
             totalContributions: payload.totalContributions || 0,
-            currentStreak: payload.currentStreak || 0,
+            currentStreak: computeCurrentStreakFromWeeks(weeksData),
             longestStreak: payload.longestStreak || 0,
             bestDay: payload.bestDay || 0,
             bestDayDate: payload.bestDayDate || '',
             months: payload.months?.length ? payload.months : FALLBACK_ACTIVITY.months,
-            weeks: payload.weeks?.length ? payload.weeks : FALLBACK_ACTIVITY.weeks,
+            weeks: weeksData,
             topLanguages: payload.topLanguages?.length
               ? payload.topLanguages
               : FALLBACK_ACTIVITY.topLanguages,
