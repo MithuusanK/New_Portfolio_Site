@@ -4,6 +4,13 @@ const fs = require('node:fs');
 const path = require('node:path');
 
 const OPENAI_ENDPOINT = 'https://api.openai.com/v1/chat/completions';
+let bundledProfile = null;
+
+try {
+  bundledProfile = require('./assistant-profile.json');
+} catch {
+  bundledProfile = null;
+}
 
 const resolveProfilePath = () => {
   const candidates = [
@@ -52,6 +59,10 @@ const DEFAULT_PROFILE = {
 };
 
 const loadProfile = () => {
+  if (bundledProfile && typeof bundledProfile === 'object') {
+    return { ...DEFAULT_PROFILE, ...bundledProfile };
+  }
+
   try {
     const raw = fs.readFileSync(PROFILE_PATH, 'utf8');
     const parsed = JSON.parse(raw);
