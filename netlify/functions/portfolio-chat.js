@@ -240,16 +240,139 @@ const loadProfile = () => {
   }
 };
 
-const buildSystemPrompt = (profile) => {
+const STOP_WORDS = new Set([
+  'a', 'an', 'the', 'and', 'or', 'of', 'to', 'for', 'in', 'on', 'at', 'by', 'with',
+  'is', 'are', 'was', 'were', 'be', 'as', 'from', 'that', 'this', 'it', 'he', 'his',
+  'her', 'their', 'they', 'you', 'your', 'about', 'what', 'which', 'who', 'how', 'why',
+  'can', 'does', 'did', 'do', 'have', 'has', 'had', 'i', 'me', 'my',
+]);
+
+const tokenize = (text = '') =>
+  (text || '')
+    .toLowerCase()
+    .replace(/[^a-z0-9\s]/g, ' ')
+    .split(/\s+/)
+    .filter((token) => token.length > 1 && !STOP_WORDS.has(token));
+
+const buildKnowledgeChunks = (profile) => {
+  const chunks = [];
   const identity = profile.identity || {};
   const contact = profile.contact || {};
-  const education = Array.isArray(profile.education) ? profile.education : [];
-  const workExperience = Array.isArray(profile.workExperience) ? profile.workExperience : [];
-  const projects = Array.isArray(profile.projects) ? profile.projects : [];
-  const hackathons = Array.isArray(profile.hackathons) ? profile.hackathons : [];
-  const extracurriculars = Array.isArray(profile.extracurriculars) ? profile.extracurriculars : [];
-  const carProfile = profile.carProfile || {};
-  const positioning = profile.positioning || {};
+
+  const addChunk = (source, text, priority = 1) => {
+    if (!text || typeof text !== 'string' || !text.trim()) {
+      return;
+    }
+
+    const tokens = tokenize(text);
+    chunks.push({
+      id: `chunk_${chunks.length + 1}`,
+      source,
+      text: text.trim(),
+      tokens,
+      tokenSet: new Set(tokens),
+      priority,
+    });
+  };
+
+  addChunk(
+    'identity',
+    `${identity.name} is a ${identity.role} based in ${identity.location}. Status: ${identity.status}.`,
+    1.8
+  );
+  addChunk(
+    'contact',
+    `Email: ${contact.email}. LinkedIn: ${contact.linkedin}. GitHub: ${contact.github}. Instagram: ${contact.instagram || 'N/A'}.`,
+    1.6
+  );
+
+  (profile.positioning?.strengths || []).forEach((strength) =>
+    addChunk('positioning', `Core strength: ${strength}`, 1.2)
+  );
+
+  (profile.education || []).forEach((item) =>
+    addChunk('education', `${item.institution}, ${item.program} (${item.date}).`, 1.1)
+  );
+
+  (profile.workExperience || []).forEach((item) => {
+    addChunk(
+      'work',
+      `${item.company} - ${item.role} (${item.date}) in ${item.location}.`,
+      2.1
+    );
+    (item.highlights || []).forEach((highlight) =>
+      addChunk('work', `${item.company}: ${highlight}`, 2.0)
+    );
+  });
+
+  (profile.projects || []).forEach((item) => {
+    addChunk('projects', `Project ${item.name}.`, 1.6);
+    (item.highlights || []).forEach((highlight) =>
+      addChunk('projects', `${item.name}: ${highlight}`, 1.5)
+    );
+  });
+
+  (profile.hackathons || []).forEach((item) => {
+    addChunk('hackathons', `${item.name} (${item.status || 'status unspecified'}).`, 1.9);
+    (item.highlights || []).forEach((highlight) =>
+      addChunk('hackathons', `${item.name}: ${highlight}`, 1.9)
+    );
+  });
+
+  addChunk('skills', `Languages: ${(profile.skills?.languages || []).join(', ')}.`, 1.4);
+  addChunk('skills', `Frameworks: ${(profile.skills?.frameworks || []).join(', ')}.`, 1.4);
+  addChunk('skills', `Tools/Cloud: ${(profile.skills?.toolsCloud || []).join(', ')}.`, 1.4);
+  addChunk('skills', `AI stack: ${(profile.skills?.aiStack || []).join(', ')}.`, 1.4);
+
+  (profile.extracurriculars || []).forEach((item) =>
+    addChunk('extracurriculars', `${item.name}: ${item.description}`, 1.25)
+  );
+
+  const car = profile.carProfile || {};
+  addChunk(
+    'automotive',
+    `Car: ${car.car}. Why: ${(car.whyHeLovesIt || []).join(' ')} Mods: ${(car.mods || []).join(', ')}. Car Instagram: ${car.instagram || contact.instagram || 'N/A'}.`,
+    1.7
+  );
+
+  return chunks;
+};
+
+const retrieveRelevantChunks = (allChunks, queryText, limit = 8) => {
+  const queryTokens = tokenize(queryText);
+
+  if (!queryTokens.length) {
+    return allChunks.slice(0, Math.min(limit, allChunks.length));
+  }
+
+  const scored = allChunks
+    .map((chunk) => {
+      let overlap = 0;
+      for (const token of queryTokens) {
+        if (chunk.tokenSet.has(token)) {
+          overlap += 1;
+        }
+      }
+
+      const normalizedOverlap = overlap / Math.max(chunk.tokens.length, 1);
+      const score = overlap * 2 + normalizedOverlap + chunk.priority * 0.35;
+      return { ...chunk, score };
+    })
+    .filter((chunk) => chunk.score > 0);
+
+  if (!scored.length) {
+    return allChunks.slice(0, Math.min(limit, allChunks.length));
+  }
+
+  return scored.sort((a, b) => b.score - a.score).slice(0, limit);
+};
+
+const buildSystemPrompt = (profile, retrievedChunks) => {
+  const identity = profile.identity || {};
+  const contact = profile.contact || {};
+  const contextBlock = (retrievedChunks || [])
+    .map((chunk, index) => `${index + 1}. [${chunk.source}] ${chunk.text}`)
+    .join('\n');
 
   return `You are Mithuusan's portfolio AI assistant.
 
@@ -273,60 +396,14 @@ Known profile:
 - Status: ${identity.status || DEFAULT_PROFILE.identity.status}
 - Email: ${contact.email || DEFAULT_PROFILE.contact.email}
 - GitHub: ${identity.githubUsername || DEFAULT_PROFILE.identity.githubUsername}
-- Headline: ${positioning.headline || DEFAULT_PROFILE.positioning.headline}
 
-Education:
-${education
-  .map((item) => `- ${item.institution}, ${item.program} (${item.date})`)
-  .join('\n') || '- Not provided'}
-
-Work experience:
-${workExperience
-  .map(
-    (item) =>
-      `- ${item.company}, ${item.role}, ${item.location} (${item.date})\n${(item.highlights || [])
-        .map((h) => `  - ${h}`)
-        .join('\n')}`
-  )
-  .join('\n') || '- Not provided'}
-
-Projects:
-${projects
-  .map((item) => `- ${item.name}\n${(item.highlights || []).map((h) => `  - ${h}`).join('\n')}`)
-  .join('\n') || '- Not provided'}
-
-Hackathons:
-${hackathons
-  .map(
-    (item) =>
-      `- ${item.name}${item.status ? ` (${item.status})` : ''}\n${(item.highlights || [])
-        .map((h) => `  - ${h}`)
-        .join('\n')}`
-  )
-  .join('\n') || '- Not provided'}
-
-Skills:
-- Languages: ${(profile.skills?.languages || []).join(', ') || 'Not provided'}
-- Frameworks: ${(profile.skills?.frameworks || []).join(', ') || 'Not provided'}
-- Tools/Cloud: ${(profile.skills?.toolsCloud || []).join(', ') || 'Not provided'}
-- AI stack: ${(profile.skills?.aiStack || []).join(', ') || 'Not provided'}
-
-Extracurricular and leadership:
-${extracurriculars
-  .map((item) => `- ${item.name}: ${item.description}`)
-  .join('\n') || '- Not provided yet'}
-
-Automotive profile:
-- Car: ${carProfile.car || 'Not provided'}
-- Why he likes it: ${(carProfile.whyHeLovesIt || []).join(' ') || 'Not provided'}
-- Modifications: ${(carProfile.mods || []).join(', ') || 'Not provided'}
-- Car Instagram: ${carProfile.instagram || contact.instagram || 'Not provided'}
+Retrieved context for this question:
+${contextBlock || 'No retrieved chunks.'}
 
 Rules:
-- Use only facts from this profile and user messages.
+- Use only facts from retrieved context and user messages.
 - If information is missing, say it is not yet available and offer direct contact.
-- Do not say work experience or hackathon data is unavailable when it exists in the profile above.
-- If asked about cars or automotive hobby, include the Audi S4 details and mention Instagram handle if relevant.
+- Always position Mithuusan positively, but with truthful evidence.
 - If asked about contact details, respond with:
   Email: ${contact.email || DEFAULT_PROFILE.contact.email}
   LinkedIn: ${contact.linkedin || DEFAULT_PROFILE.contact.linkedin}
@@ -374,11 +451,14 @@ export const handler = async (event) => {
   try {
     const payload = JSON.parse(event.body || '{}');
     const profile = loadProfile();
-    const systemPrompt = buildSystemPrompt(profile);
     const requestedModel = typeof payload.model === 'string' ? payload.model : '';
     const temperature = payload.mode === 'Pro' ? 0.25 : payload.mode === 'Fast' ? 0.55 : 0.35;
     const userMessages = sanitizeMessages(payload.messages);
     const latestUserMessage = [...userMessages].reverse().find((m) => m.role === 'user')?.content || '';
+    const retrievalQuery = userMessages.map((m) => m.content).join('\n');
+    const knowledgeChunks = buildKnowledgeChunks(profile);
+    const retrievedChunks = retrieveRelevantChunks(knowledgeChunks, retrievalQuery, 8);
+    const systemPrompt = buildSystemPrompt(profile, retrievedChunks);
     const maxTokens = isDetailedRequest(latestUserMessage) ? 420 : 220;
     const envDefaultModel = globalThis.process?.env?.OPENAI_MODEL || '';
     const modelCandidates = [requestedModel, 'gpt-4.1-nano', envDefaultModel, 'gpt-4.1-mini', 'gpt-4o-mini']
@@ -451,6 +531,10 @@ export const handler = async (event) => {
           body: JSON.stringify({
             reply: reply || 'I can help with Mithuusan\'s experience, skills, and projects. What would you like to know?',
             model,
+            rag: {
+              used: true,
+              chunks: retrievedChunks.map((chunk) => chunk.source),
+            },
           }),
         };
       }
