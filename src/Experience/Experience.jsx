@@ -7,16 +7,15 @@ import muiaLogo from '../assets/Muia.png';
 
 const experiences = [
   {
-    role: 'Program Officer (Data and Analytics)',
-    company: 'Stephen Lewis Foundation',
+    role: 'Software Developer (Contract)',
+    company: 'SGMC Canada',
     location: 'Toronto, ON',
-    date: 'Oct 2024 - Dec 2025',
-    logo: stephenLewisLogo,
-    stack: ['Power BI', 'DAX', 'SQL', 'Power Query'],
+    date: 'Jan 2026 - Present',
+    logo: null,
+    stack: ['Next.js', 'React', 'TypeScript', 'Tailwind CSS', 'Express.js', 'PostgreSQL', 'AWS S3'],
     bullets: [
-      'Designed and deployed a Power BI dashboard automating Microsoft Forms data intake and reducing manual reporting time.',
-      'Built custom metrics with DAX and Power Query, improving reporting accuracy by 25 percent.',
-      'Coordinated SQL and Excel data sources across 3+ teams to improve consistency and reporting velocity.',
+      "Led development of Connect2Talents' initial web application using Next.js, React, TypeScript, and Tailwind CSS, delivering core onboarding, dashboard, and document review workflows.",
+      'Built secure Express.js and PostgreSQL backend services with authentication APIs, role-based access control, protected routes, and AWS S3 uploads, enabling secure onboarding and document handling.',
     ],
   },
   {
@@ -27,9 +26,21 @@ const experiences = [
     logo: muiaLogo,
     stack: ['FastAPI', 'Vue', 'OAuth 2.0', 'Data Validation'],
     bullets: [
-      'Built scalable FastAPI services and a Vue frontend for uploading, validating, and processing tax documents.',
-      'Engineered validation pipelines that reached 98 percent processing accuracy.',
-      'Integrated secure Google Drive OAuth 2.0 workflows to automate document delivery.',
+      'Built a FastAPI backend using Google Gemini 2.0 Flash and Google Document AI to convert unstructured tax documents into structured SR&ED claim data, automating a key step in claim preparation.',
+      'Designed an OCR + Gemini document pipeline with normalized JSON/CSV outputs, reducing SR&ED workflow time by 50%.',
+      'Developed Python services to process financial records, automate ITC eligibility checks, and enforce validation logic for accurate outputs.',
+    ],
+  },
+  {
+    role: 'Program Officer (Data and Analytics)',
+    company: 'Stephen Lewis Foundation',
+    location: 'Toronto, ON',
+    date: 'Oct 2024 - Dec 2025',
+    logo: stephenLewisLogo,
+    stack: ['Power BI', 'DAX', 'SQL', 'Power Query'],
+    bullets: [
+      'Delivered a Power BI dashboard and automated intake workflow that cut manual reporting time by 50% across 5 teams in a 100+ employee organization.',
+      'Built SQL-based data pipelines with validation and transformation logic, replacing a days-long reporting process with instant access to decision-ready insights.',
     ],
   },
   {
@@ -66,9 +77,8 @@ const experiences = [
     logo: equitableLogo,
     stack: ['Jenkins', 'Kibana', 'CI/CD', 'Confluence'],
     bullets: [
-      'Automated CI/CD pipelines with Jenkins and reduced manual deployment effort by 30 percent.',
-      'Built monitoring dashboards with Kibana to improve response time by 25 percent.',
-      'Documented onboarding guides and team pages that shortened new-hire ramp-up.',
+      'Designed CI/CD pipelines to automate build, test, and deployment workflows, supporting 25+ production deployments for a digital banking card project.',
+      'Built an API dependency map to identify downstream service impacts faster and reduce downtime risk during weekly and monthly releases.',
     ],
   },
 ];
@@ -90,7 +100,11 @@ const Experience = () => (
 
             <div className="timeline-company-row">
               <div className="timeline-logo">
-                <img src={exp.logo} alt={`${exp.company} logo`} />
+                {exp.logo ? (
+                  <img src={exp.logo} alt={`${exp.company} logo`} />
+                ) : (
+                  <span aria-hidden="true">{exp.company.slice(0, 2).toUpperCase()}</span>
+                )}
               </div>
               <div>
                 <h3>{exp.role}</h3>
