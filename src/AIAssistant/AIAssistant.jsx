@@ -12,13 +12,17 @@ const quickPrompts = [
 
 const fallbackReply = `I could not reach the live model right now. You can still ask about Mithuusan's experience, skills, projects, and fit, or contact him at mithuusank@gmail.com.`;
 
-const normalizeAssistantText = (text = '') =>
-  text
+const normalizeAssistantText = (text = '') => {
+  const raw = typeof text === 'string' ? text : '';
+  const normalized = raw
     .replace(/\[([^\]]+)\]\((https?:\/\/[^\s)]+)\)/g, '$1')
     .replace(/\*\*/g, '')
     .replace(/`/g, '')
     .replace(/^\s*[-*]\s+/gm, '')
     .trim();
+
+  return normalized || raw.trim();
+};
 
 const AIAssistant = () => {
   const [isOpen, setIsOpen] = useState(false);
@@ -58,7 +62,8 @@ const AIAssistant = () => {
       throw new Error(payload.error || `Request failed with ${response.status}`);
     }
 
-    return payload.reply || fallbackReply;
+    const reply = typeof payload.reply === 'string' ? payload.reply : '';
+    return reply.trim() || fallbackReply;
   };
 
   const submitQuestion = async (value) => {
@@ -77,7 +82,8 @@ const AIAssistant = () => {
 
     try {
       const reply = await requestAssistantReply(nextConversation);
-      setMessages((prev) => [...prev, { role: 'assistant', text: normalizeAssistantText(reply) }]);
+      const normalizedReply = normalizeAssistantText(reply);
+      setMessages((prev) => [...prev, { role: 'assistant', text: normalizedReply || fallbackReply }]);
     } catch {
       setMessages((prev) => [...prev, { role: 'assistant', text: fallbackReply }]);
     } finally {

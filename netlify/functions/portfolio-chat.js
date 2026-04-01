@@ -247,6 +247,23 @@ const STOP_WORDS = new Set([
   'can', 'does', 'did', 'do', 'have', 'has', 'had', 'i', 'me', 'my',
 ]);
 
+const HOBBY_QUERY_TERMS = new Set([
+  'hobby',
+  'hobbies',
+  'outside',
+  'personal',
+  'interests',
+  'interest',
+  'free',
+  'time',
+  'fun',
+  'lifestyle',
+  'sports',
+  'car',
+  'cars',
+  'gym',
+]);
+
 const tokenize = (text = '') =>
   (text || '')
     .toLowerCase()
@@ -340,6 +357,12 @@ const buildKnowledgeChunks = (profile) => {
 
 const retrieveRelevantChunks = (allChunks, queryText, limit = 8) => {
   const queryTokens = tokenize(queryText);
+  const hobbyIntent = queryTokens.some(
+    (token) => HOBBY_QUERY_TERMS.has(token) || token.startsWith('hobb')
+  );
+  const lifestyleChunks = allChunks.filter(
+    (chunk) => chunk.source === 'extracurriculars' || chunk.source === 'automotive'
+  );
 
   if (!queryTokens.length) {
     return allChunks.slice(0, Math.min(limit, allChunks.length));
@@ -355,16 +378,42 @@ const retrieveRelevantChunks = (allChunks, queryText, limit = 8) => {
       }
 
       const normalizedOverlap = overlap / Math.max(chunk.tokens.length, 1);
-      const score = overlap * 2 + normalizedOverlap + chunk.priority * 0.35;
+      let score = overlap * 2 + normalizedOverlap + chunk.priority * 0.35;
+
+      if (hobbyIntent && chunk.source === 'extracurriculars') {
+        score += 4;
+      } else if (hobbyIntent && chunk.source === 'automotive') {
+        score += 2.4;
+      }
+
       return { ...chunk, score };
     })
     .filter((chunk) => chunk.score > 0);
 
   if (!scored.length) {
+    if (hobbyIntent && lifestyleChunks.length) {
+      return lifestyleChunks.slice(0, Math.min(limit, lifestyleChunks.length));
+    }
+
     return allChunks.slice(0, Math.min(limit, allChunks.length));
   }
 
-  return scored.sort((a, b) => b.score - a.score).slice(0, limit);
+  const ranked = scored.sort((a, b) => b.score - a.score).slice(0, limit);
+
+  if (hobbyIntent) {
+    const hasLifestyleContext = ranked.some(
+      (chunk) => chunk.source === 'extracurriculars' || chunk.source === 'automotive'
+    );
+
+    if (!hasLifestyleContext && lifestyleChunks.length) {
+      const additionalContext = lifestyleChunks
+        .filter((chunk) => !ranked.some((existing) => existing.id === chunk.id))
+        .slice(0, 2);
+      return [...additionalContext, ...ranked].slice(0, limit);
+    }
+  }
+
+  return ranked;
 };
 
 const buildSystemPrompt = (profile, retrievedChunks) => {
@@ -396,12 +445,17 @@ Known profile:
 - Status: ${identity.status || DEFAULT_PROFILE.identity.status}
 - Email: ${contact.email || DEFAULT_PROFILE.contact.email}
 - GitHub: ${identity.githubUsername || DEFAULT_PROFILE.identity.githubUsername}
+- Hobbies/extracurriculars: ${(profile.extracurriculars || [])
+    .map((item) => item.name)
+    .filter(Boolean)
+    .join(', ') || 'Not listed'}
 
 Retrieved context for this question:
 ${contextBlock || 'No retrieved chunks.'}
 
 Rules:
 - Use only facts from retrieved context and user messages.
+- If the user asks about hobbies/interests/outside-work activities, list all known hobbies from the profile before adding detail.
 - If information is missing, say it is not yet available and offer direct contact.
 - Always position Mithuusan positively, but with truthful evidence.
 - If asked about contact details, respond with:
@@ -428,6 +482,85 @@ const sanitizeMessages = (messages = []) =>
 
 const isDetailedRequest = (text = '') =>
   /detailed|in depth|deep dive|comprehensive|full breakdown|step by step|longer answer/i.test(text);
+
+const isHobbiesRequest = (text = '') =>
+  /hobby|hobbies|outside of work|outside work|free time|spare time|after work|interests|for fun|pastime|what do.*like/i.test(
+    text
+  );
+
+const buildHobbiesReply = (profile) => {
+  const extracurriculars = Array.isArray(profile.extracurriculars) ? profile.extracurriculars : [];
+  const contactEmail = profile.contact?.email || DEFAULT_PROFILE.contact.email;
+  const car = profile.carProfile || {};
+
+  const hobbyNames = extracurriculars
+    .map((item) => item?.name)
+    .filter(Boolean)
+    .filter((name) => !/automotive|car/i.test(name));
+  const autoHobby = extracurriculars.find((item) =>
+    /automotive|car/i.test(item?.name || item?.description || '')
+  );
+
+  const parts = [];
+
+  if (hobbyNames.length) {
+    parts.push(`Mithuusan's hobbies include ${hobbyNames.join(', ')}.`);
+  }
+
+  if (autoHobby?.description) {
+    parts.push(`He is also into cars: ${autoHobby.description}`);
+  } else if (car.car) {
+    parts.push(`He is also into cars and currently drives a ${car.car}.`);
+  }
+
+  if (!parts.length) {
+    parts.push("Mithuusan's hobbies are not fully listed in the current profile yet.");
+  }
+
+  parts.push(`For additional personal details, contact ${contactEmail}.`);
+  return parts.join(' ');
+};
+
+const extractReplyText = (result) => {
+  const content = result?.choices?.[0]?.message?.content;
+
+  if (typeof content === 'string') {
+    return content.trim();
+  }
+
+  if (Array.isArray(content)) {
+    return content
+      .map((part) => {
+        if (typeof part === 'string') {
+          return part;
+        }
+
+        if (part && typeof part === 'object') {
+          if (typeof part.text === 'string') {
+            return part.text;
+          }
+
+          if (part.text && typeof part.text.value === 'string') {
+            return part.text.value;
+          }
+        }
+
+        return '';
+      })
+      .join(' ')
+      .trim();
+  }
+
+  return '';
+};
+
+const buildLocalFallbackReply = (query, profile) => {
+  if (isHobbiesRequest(query)) {
+    return buildHobbiesReply(profile);
+  }
+
+  return "I can help with Mithuusan's experience, skills, and projects. What would you like to know?";
+};
 
 export const handler = async (event) => {
   if (event.httpMethod !== 'POST') {
@@ -461,7 +594,7 @@ export const handler = async (event) => {
     const systemPrompt = buildSystemPrompt(profile, retrievedChunks);
     const maxTokens = isDetailedRequest(latestUserMessage) ? 420 : 220;
     const envDefaultModel = globalThis.process?.env?.OPENAI_MODEL || '';
-    const modelCandidates = [requestedModel, 'gpt-4.1-nano', envDefaultModel, 'gpt-4.1-mini', 'gpt-4o-mini']
+    const modelCandidates = [requestedModel, envDefaultModel, 'gpt-4.1-mini', 'gpt-4o-mini', 'gpt-4.1-nano']
       .filter(Boolean)
       .filter((model, index, arr) => arr.indexOf(model) === index);
 
@@ -470,6 +603,24 @@ export const handler = async (event) => {
         statusCode: 400,
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ error: 'No conversation messages provided.' }),
+      };
+    }
+
+    if (isHobbiesRequest(latestUserMessage)) {
+      return {
+        statusCode: 200,
+        headers: {
+          'Content-Type': 'application/json',
+          'Cache-Control': 'no-store',
+        },
+        body: JSON.stringify({
+          reply: buildHobbiesReply(profile),
+          model: 'local-profile',
+          rag: {
+            used: true,
+            chunks: retrievedChunks.map((chunk) => chunk.source),
+          },
+        }),
       };
     }
 
@@ -520,7 +671,8 @@ export const handler = async (event) => {
       }
 
       if (response.ok) {
-        const reply = result?.choices?.[0]?.message?.content?.trim();
+        const reply = extractReplyText(result);
+        const safeReply = reply || buildLocalFallbackReply(latestUserMessage, profile);
 
         return {
           statusCode: 200,
@@ -529,7 +681,7 @@ export const handler = async (event) => {
             'Cache-Control': 'no-store',
           },
           body: JSON.stringify({
-            reply: reply || 'I can help with Mithuusan\'s experience, skills, and projects. What would you like to know?',
+            reply: safeReply,
             model,
             rag: {
               used: true,
