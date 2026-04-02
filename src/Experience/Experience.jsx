@@ -1,9 +1,9 @@
 import React from 'react';
 import stephenLewisLogo from '../assets/Stephen Lewis Foundation.png';
 import aquazenLogo from '../assets/Aquazen Services.png';
-import riipenLogo from '../assets/Riipen.png';
 import equitableLogo from '../assets/Equitable Bank.png';
 import muiaLogo from '../assets/Muia.png';
+import walmartLogo from '../assets/walmart.png';
 
 const experiences = [
   {
@@ -57,19 +57,6 @@ const experiences = [
     ],
   },
   {
-    role: 'Web Developer - DJ Business Site',
-    company: 'Riipen',
-    location: 'Toronto, ON',
-    date: 'Jan 2025 - Apr 2025',
-    logo: riipenLogo,
-    stack: ['SEO', 'Google Analytics', 'Scrum', 'Frontend QA'],
-    bullets: [
-      'Delivered a responsive client site under Scrum timelines with production-ready reliability.',
-      'Applied SEO and analytics improvements that increased traffic by 25 percent.',
-      'Integrated Google Business Profile API data to boost trust and engagement.',
-    ],
-  },
-  {
     role: 'Cloud and DevOps Engineer Intern',
     company: 'Equitable Bank',
     location: 'Toronto, ON',
@@ -79,6 +66,19 @@ const experiences = [
     bullets: [
       'Designed CI/CD pipelines to automate build, test, and deployment workflows, supporting 25+ production deployments for a digital banking card project.',
       'Built an API dependency map to identify downstream service impacts faster and reduce downtime risk during weekly and monthly releases.',
+    ],
+  },
+  {
+    role: 'Sales Floor Team Lead',
+    company: 'Walmart',
+    location: 'Toronto, ON',
+    date: 'Jun 2020 - Oct 2024',
+    logo: walmartLogo,
+    stack: ['Team Leadership', 'Customer Service', 'Store Operations', 'Issue Resolution', 'Electronics Sales'],
+    bullets: [
+      'Led and coached 30+ sales floor associates, ensuring daily priorities were completed on time, performance was monitored, and complex customer issues were resolved through clear root-cause problem solving.',
+      'Delivered an exceptional in-store customer experience by maintaining department readiness, visual standards, and overall store conditions in line with company expectations.',
+      'Supported the Electronics department by advising customers on suitable devices, accessories, and software options based on needs, budget, and product compatibility.',
     ],
   },
 ];

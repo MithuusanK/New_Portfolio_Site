@@ -4,10 +4,41 @@ import profilePic from '../assets/profile.jpg';
 const initialAssistantMessage = `I'm Mithuusan's AI assistant. Ask me about anything!`;
 
 const quickPrompts = [
-  { label: 'Work', prompt: "Summarize Mithuusan's work experience and measurable impact." },
-  { label: 'About Me', prompt: 'Give a concise professional summary of Mithuusan.' },
-  { label: 'Skills', prompt: "Summarize Mithuusan's strongest technical skills and stack." },
-  { label: 'Contact', prompt: 'How can someone contact Mithuusan for opportunities?' },
+  {
+    label: 'Work',
+    displayText: "Tell me about Mithuusan's work.",
+    prompt:
+      "Summarize Mithuusan's work experience with measurable impact. Include quantified outcomes (percentages, counts, time saved) when available.",
+  },
+  {
+    label: 'About Me',
+    displayText: 'Who is Mithuusan?',
+    prompt:
+      'Give a concise professional summary of Mithuusan in 2-3 sentences, focused on profile and strengths (not a company-by-company timeline).',
+  },
+  {
+    label: 'Skills',
+    displayText: "What are Mithuusan's top skills?",
+    prompt:
+      "Summarize Mithuusan's strongest technical skills and stack. Start with in-demand programming languages he uses, then frameworks, backend/data, cloud/devops, and AI tools.",
+  },
+  {
+    label: 'Hobbies',
+    displayText: "What are Mithuusan's hobbies?",
+    prompt:
+      "Summarize Mithuusan's hobbies outside work, excluding cars and coding. Focus on the rest of his hobbies.",
+  },
+  {
+    label: 'Passion',
+    displayText: "What is Mithuusan passionate about?",
+    prompt:
+      "Summarize Mithuusan's passions with focus on cars and coding.",
+  },
+  {
+    label: 'Contact',
+    displayText: 'How can I contact Mithuusan?',
+    prompt: 'How can someone contact Mithuusan for opportunities?',
+  },
 ];
 
 const fallbackReply = `I could not reach the live model right now. You can still ask about Mithuusan's experience, skills, projects, and fit, or contact him at mithuusank@gmail.com.`;
@@ -49,7 +80,13 @@ const AIAssistant = () => {
         headers: { 'Content-Type': 'application/json' },
         signal: controller.signal,
         body: JSON.stringify({
-          messages: conversation.slice(-8),
+          messages: conversation.slice(-8).map((message) => ({
+            role: message.role,
+            text:
+              typeof message.modelText === 'string' && message.modelText.trim()
+                ? message.modelText
+                : message.text,
+          })),
         }),
       });
     } finally {
@@ -66,14 +103,15 @@ const AIAssistant = () => {
     return reply.trim() || fallbackReply;
   };
 
-  const submitQuestion = async (value) => {
+  const submitQuestion = async (value, modelValue = '') => {
     const question = value.trim();
+    const modelQuestion = (modelValue || value).trim();
 
     if (!question || isThinking) {
       return;
     }
 
-    const userMessage = { role: 'user', text: question };
+    const userMessage = { role: 'user', text: question, modelText: modelQuestion };
     const nextConversation = [...messages, userMessage];
 
     setMessages(nextConversation);
@@ -142,7 +180,11 @@ const AIAssistant = () => {
 
         <div className="assistant-quick-actions">
           {quickPrompts.map((item) => (
-            <button key={item.label} type="button" onClick={() => submitQuestion(item.prompt)}>
+            <button
+              key={item.label}
+              type="button"
+              onClick={() => submitQuestion(item.displayText || item.prompt, item.prompt)}
+            >
               {item.label}
             </button>
           ))}

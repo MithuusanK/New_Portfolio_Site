@@ -30,9 +30,9 @@
       "location": "Toronto, ON",
       "date": "Jan 2026 - Present",
       "highlights": [
-        "Building Connect2Talents web app with Next.js, React, TypeScript, and Tailwind across 10+ screens.",
-        "Developing Express.js and PostgreSQL backend services with auth APIs, protected routes, and role-based access.",
-        "Implementing AWS S3 file upload workflows for secure onboarding and document handling."
+        "Led development of Connect2Talents initial web app using Next.js, React, TypeScript, and Tailwind across 10+ product screens.",
+        "Built secure Express.js and PostgreSQL backend services with authentication APIs, role-based access control, and protected routes.",
+        "Implemented AWS S3 upload workflows to support secure onboarding and document handling."
       ]
     },
     {
@@ -42,7 +42,7 @@
       "date": "Sep 2025 - Dec 2025",
       "highlights": [
         "Built FastAPI backend using Google Gemini and Google Document AI for structured SR&ED claim extraction.",
-        "Built resilient OCR and fallback pipeline; reduced manual document processing time by about 50 percent.",
+        "Designed resilient OCR and fallback pipeline; reduced manual document processing time by 50%.",
         "Implemented Pydantic-validated APIs and Google Drive OAuth 2.0 integration."
       ]
     },
@@ -52,8 +52,19 @@
       "location": "Toronto, ON",
       "date": "Oct 2024 - Dec 2025",
       "highlights": [
-        "Delivered Power BI dashboard and intake automation; reduced manual reporting time by about 50 percent.",
-        "Built SQL data pipelines for validated, decision-ready analytics."
+        "Delivered Power BI dashboard and automated intake workflow that reduced manual reporting time by 50% across 5 teams in a 100+ employee organization.",
+        "Built SQL data pipelines with transformation and validation logic, replacing a days-long reporting cycle with decision-ready insights."
+      ]
+    },
+    {
+      "company": "Aquazen Services",
+      "role": "Full Stack Developer",
+      "location": "Toronto, ON",
+      "date": "May 2025 - Sep 2025",
+      "highlights": [
+        "Revamped a full-stack web app with modern Next.js components and Redux state architecture.",
+        "Optimized Node.js and PostgreSQL REST APIs, reducing response latency by 20%.",
+        "Designed pagination and schema updates to support 200+ daily transactions reliably."
       ]
     },
     {
@@ -64,6 +75,16 @@
       "highlights": [
         "Implemented CI/CD pipelines supporting 25+ production deployments.",
         "Built API dependency mapping to reduce release risk and improve reliability."
+      ]
+    },
+    {
+      "company": "Walmart",
+      "role": "Sales Floor Team Lead",
+      "location": "Toronto, ON",
+      "date": "Jun 2020 - Oct 2024",
+      "highlights": [
+        "Led and coached 30+ sales floor associates while maintaining daily execution and service quality.",
+        "Resolved complex customer and operations issues through root-cause problem solving and clear team coordination."
       ]
     }
   ],
@@ -146,7 +167,7 @@
     }
   ],
   "skills": {
-    "languages": ["Java", "Python", "TypeScript", "SQL"],
+    "languages": ["JavaScript", "TypeScript", "Python", "Java", "SQL", "Bash (Shell)", "PowerShell"],
     "frameworks": ["React.js", "Next.js", "React Native", "Tailwind CSS", "Vite", "FastAPI", "Express.js"],
     "toolsCloud": ["Git", "Docker", "Jenkins", "Linux", "Power BI", "PostgreSQL", "Supabase", "AWS (S3, App Runner)"],
     "aiStack": ["OpenAI API", "Google Gemini", "Google Document AI", "AWS Bedrock"]
@@ -197,15 +218,15 @@
   "extracurriculars": [
     {
       "name": "Fitness and training",
-      "description": "Regular gym training and discipline-focused health routine."
+      "description": "He loves weight lifting and is proud of hitting a 225 lb bench press."
     },
     {
       "name": "Sports",
-      "description": "Plays soccer and basketball."
+      "description": "He plays soccer and basketball, and he grew up playing both."
     },
     {
       "name": "Gaming",
-      "description": "Enjoys games in free time."
+      "description": "He mainly plays racing and FPS games."
     },
     {
       "name": "Code for fun",
