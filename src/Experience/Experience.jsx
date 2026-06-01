@@ -10,7 +10,7 @@ const experiences = [
     role: 'Software Developer (Contract)',
     company: 'SGMC Canada',
     location: 'Toronto, ON',
-    date: 'Jan 2026 - Present',
+    date: 'Jan 2026 - Apr 2026',
     logo: null,
     stack: ['Next.js', 'React', 'TypeScript', 'Tailwind CSS', 'Express.js', 'PostgreSQL', 'AWS S3'],
     bullets: [

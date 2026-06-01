@@ -5,7 +5,7 @@ const summaryRows = [
   { label: 'Operator', value: 'Mithuusan Kirupananthan' },
   { label: 'Role', value: 'Full Stack Software Engineer' },
   { label: 'Location', value: 'Toronto, Ontario, Canada' },
-  { label: 'Status', value: 'Open to Work' },
+  { label: 'Status', value: 'Currently Employed' },
 ];
 
 const quickStats = [

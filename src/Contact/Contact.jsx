@@ -1,7 +1,7 @@
 import React from 'react';
 
 const contactItems = [
-  { label: 'status', value: 'open_to_work' },
+  { label: 'status', value: 'currently_employed' },
   { label: 'email', value: 'mithuusank@gmail.com' },
   { label: 'phone', value: '+1 (647) 568-7527' },
   { label: 'location', value: 'Toronto, Ontario, Canada' },
@@ -17,7 +17,7 @@ const Contact = () => (
         <pre>
           <code>
 {`{
-  "status": "open_to_work",
+  "status": "currently_employed",
   "email": "mithuusank@gmail.com",
   "phone": "+1 (647) 568-7527",
   "location": "Toronto, Ontario, Canada"

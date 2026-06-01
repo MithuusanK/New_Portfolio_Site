@@ -150,7 +150,7 @@ const AIAssistant = () => {
             </div>
             <div>
               <p className="assistant-title">&gt; Mithuusan.ai</p>
-              <p className="assistant-subtitle">// Open to Work</p>
+              <p className="assistant-subtitle">// Currently Employed</p>
             </div>
           </div>
 

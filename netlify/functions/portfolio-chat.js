@@ -29,7 +29,7 @@ const DEFAULT_PROFILE = {
     linkedInName: 'Mithuusan Kirupnanthan',
     role: 'Full Stack Software Engineer',
     location: 'Toronto, Ontario, Canada',
-    status: 'Open to Work',
+    status: 'Currently Employed',
     email: 'mithuusank@gmail.com',
     githubUsername: 'MithuusanK',
   },
@@ -54,7 +54,7 @@ const DEFAULT_PROFILE = {
       company: 'SGMC Canada',
       role: 'Software Developer (Contract)',
       location: 'Toronto, ON',
-      date: 'Jan 2026 - Present',
+      date: 'Jan 2026 - Apr 2026',
       highlights: [
         'Building Connect2Talents web app with Next.js, React, TypeScript, and Tailwind across 10+ screens.',
         'Developing Express.js and PostgreSQL backend services with auth APIs, protected routes, and role-based access.',

@@ -4,7 +4,7 @@
     "linkedInName": "Mithuusan Kirupnanthan",
     "role": "Full Stack Software Engineer",
     "location": "Toronto, Ontario, Canada",
-    "status": "Open to Work",
+    "status": "Currently Employed",
     "email": "mithuusank@gmail.com",
     "githubUsername": "MithuusanK"
   },
@@ -28,7 +28,7 @@
       "company": "SGMC Canada",
       "role": "Software Developer (Contract)",
       "location": "Toronto, ON",
-      "date": "Jan 2026 - Present",
+      "date": "Jan 2026 - Apr 2026",
       "highlights": [
         "Led development of Connect2Talents initial web app using Next.js, React, TypeScript, and Tailwind across 10+ product screens.",
         "Built secure Express.js and PostgreSQL backend services with authentication APIs, role-based access control, and protected routes.",
